@@ -169,3 +169,13 @@ class ListPlayersTests(TestCase):
         list(self.players.get())
         self.assertEqual(32, get_infos_mocked.call_count)
         self.assertEqual(32, parser_mocked.call_count)
+
+    def test_maximizations(self):
+        body = get_fixture(f'{FIXTURES_PATH}/training_report.txt')
+        result = list(self.players.maximizations(body))
+        self.assertListEqual(['heading', 'shooting', 'stamina'], result)
+
+    def test_maximizations_with_empty_body(self):
+        body = ''
+        result = list(self.players.maximizations(body))
+        self.assertListEqual([], result)

@@ -1,7 +1,10 @@
+import json
 import re
+from typing import Iterable
 
 from parsel import Selector
 
+from app.const import KEY_SKILL_MAP
 from app.log import logger
 
 
@@ -17,6 +20,19 @@ class Players:
     def players_content(self):
         sel = Selector(text=self.data)
         return sel.xpath("//div[@id='players_container']/div").extract()
+
+    @staticmethod
+    def maximizations(body: str) -> Iterable:
+        regex = r"(\[.*\])"
+        if match := re.findall(regex, body):
+            data = json.loads(match[0])
+        else:
+            return []
+
+        for item in data:
+            if item.get('showInNavigator') == 'false' and item['color'] == 'rgba(255,0,0,0.7)':
+                code = item['data'][0]['y']
+                yield KEY_SKILL_MAP[code]
 
     @staticmethod
     def get_infos(player_content):
