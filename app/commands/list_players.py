@@ -4,7 +4,7 @@ from typing import Iterable
 
 from parsel import Selector
 
-from app.const import KEY_SKILL_MAP
+from app.const import MAPPING_KEY_TRAINING_REPORT, MAPPING_SKILL
 from app.log import logger
 
 
@@ -12,12 +12,12 @@ class Players:
     def __init__(self, data):
         self.data = data
 
-    def get(self):
+    def get(self) -> Iterable:
         for player_content in self.players_content():
             player = self.get_infos(player_content)
             yield self.parser(player)
 
-    def players_content(self):
+    def players_content(self) -> list:
         sel = Selector(text=self.data)
         return sel.xpath("//div[@id='players_container']/div").extract()
 
@@ -32,13 +32,13 @@ class Players:
         for item in data:
             if item.get('showInNavigator') == 'false' and item['color'] == 'rgba(255,0,0,0.7)':
                 code = item['data'][0]['y']
-                yield KEY_SKILL_MAP[code]
+                yield MAPPING_KEY_TRAINING_REPORT[code]
 
     @staticmethod
     def get_infos(player_content):
         sel = Selector(text=player_content)
 
-        player = dict(
+        return dict(
             number=sel.xpath("//a[@class='subheader']/text()").get(),
             name=sel.xpath("//span[@class='player_name']/text()").get(),
             player_id=sel.xpath("//span[@class='player_id_span']/text()").get(),
@@ -78,7 +78,6 @@ class Players:
             status_training_camp=sel.xpath("//div[@class='p_sublinks']/span[3]/span/span/span[@class='player_icon_image']/@style").get(),
             status_ycc=sel.xpath("//div[@class='p_sublinks']/span[4]/span/span/span[@class='player_icon_image']/@style").get(),
         )
-        return player
 
     @staticmethod
     def get_percent_skill(value: str) -> float:
@@ -105,7 +104,7 @@ class Players:
         percente_number = self.get_percent_skill(row.pop(f'{skill_name}_percent'))
         return absolute_number + percente_number
 
-    def parser(self, row: dict):
+    def parser(self, row: dict) -> dict:
         row['country'] = row['country'][-6:-4]
         row['number'] = self.get_number(row['number'])
         row['salary'] = self.get_number(row['salary'])
