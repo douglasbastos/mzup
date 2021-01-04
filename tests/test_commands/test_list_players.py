@@ -179,3 +179,21 @@ class ListPlayersTests(TestCase):
         body = ''
         result = list(self.players.maximizations(body))
         self.assertListEqual([], result)
+
+    def test_scout_report(self):
+        body = get_fixture(f'{FIXTURES_PATH}/scout_report.html')
+        result = self.players.scout_report(body)
+        expected = {
+            'highest_potential': ['ball_control', 'aerial_passing'],
+            'highest_stars': 2,
+            'lowest_potential': ['set_plays', 'stamina'],
+            'lowest_stars': 2,
+            'training_speed_stars': 2
+        }
+        self.assertEqual(expected, result)
+
+    def test_scout_report_empty_body(self):
+        body = ''
+        result = self.players.scout_report(body)
+        expected = {}
+        self.assertEqual(expected, result)

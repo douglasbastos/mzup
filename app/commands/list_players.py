@@ -35,7 +35,33 @@ class Players:
                 yield MAPPING_KEY_TRAINING_REPORT[code]
 
     @staticmethod
-    def get_infos(player_content):
+    def count_stars(html: str) -> int:
+        return html.count('fa fa-star fa-2x lit')
+
+    @staticmethod
+    def parser_skill(names: list) -> list:
+        try:
+            return [MAPPING_SKILL[name] for name in names]
+        except KeyError:
+            return []
+
+    def scout_report(self, body: str) -> Iterable:
+        if not body:
+            return {}
+
+        sel = Selector(body)
+        potencial = sel.xpath("//dl/dd[1]//li[@class='blurred']//text()").extract()
+        stars = sel.xpath("//div[@class='flex-grow-1']/span[@class='stars']").extract()
+        return {
+            'highest_potential': self.parser_skill(potencial[0:2]),
+            'lowest_potential': self.parser_skill(potencial[2:4]),
+            'highest_stars': self.count_stars(html=stars[0]),
+            'lowest_stars': self.count_stars(html=stars[1]),
+            'training_speed_stars': self.count_stars(html=stars[2])
+        }
+
+    @staticmethod
+    def get_infos(player_content: str) -> dict:
         sel = Selector(text=player_content)
 
         return dict(
