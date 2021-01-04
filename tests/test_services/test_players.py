@@ -1,7 +1,7 @@
 import json
 from unittest import mock, TestCase
 
-from app.commands.list_players import Players
+from app.services.players import Players
 from tests.utils import get_fixture, FIXTURES_PATH
 
 

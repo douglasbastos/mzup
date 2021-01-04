@@ -151,3 +151,8 @@ class Players:
         row['aerial_passing'] = self.calcule_skill(row, skill_name='aerial_passing')
         row['set_plays'] = self.calcule_skill(row, skill_name='set_plays')
         return row
+
+
+if __name__ == '__main__':
+    ...
+    # get_player_scout_report(player_id=214119207, session_id='ir6mqa5e04e96g0t50beef9dm6')
