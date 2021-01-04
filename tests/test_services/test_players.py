@@ -5,7 +5,7 @@ from app.services.players import Players
 from tests.utils import get_fixture, FIXTURES_PATH
 
 
-class ListPlayersTests(TestCase):
+class PlayersTests(TestCase):
     def setUp(self) -> None:
         self.data = json.loads(get_fixture(f'{FIXTURES_PATH}/my_players.html'))['players']
         self.players = Players(self.data)
