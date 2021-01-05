@@ -8,6 +8,7 @@ pytest = "*"
 
 [packages]
 requestium = "*"
+aiohttp = "*"
 
 [requires]
 python_version = "3.8"

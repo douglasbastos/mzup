@@ -15,24 +15,26 @@ class Players:
     def get(self) -> Iterable:
         for player_content in self.players_content():
             player = self.get_infos(player_content)
-            yield self.parser(player)
+            yield player['player_id'], self.parser(player)
 
     def players_content(self) -> list:
         sel = Selector(text=self.data)
         return sel.xpath("//div[@id='players_container']/div").extract()
 
     @staticmethod
-    def maximizations(body: str) -> Iterable:
+    def maximizations(body: str) -> list:
         regex = r"(\[.*\])"
         if match := re.findall(regex, body):
             data = json.loads(match[0])
         else:
             return []
 
+        result = []
         for item in data:
             if item.get('showInNavigator') == 'false' and item['color'] == 'rgba(255,0,0,0.7)':
                 code = item['data'][0]['y']
-                yield MAPPING_KEY_TRAINING_REPORT[code]
+                result.append(MAPPING_KEY_TRAINING_REPORT[code])
+        return result
 
     @staticmethod
     def count_stars(html: str) -> int:
@@ -50,7 +52,7 @@ class Players:
             return {}
 
         sel = Selector(body)
-        potencial = sel.xpath("//dl/dd[1]//li[@class='blurred']//text()").extract()
+        potencial = sel.xpath("//dl/dd[1]//li[@class='blurred']/span[last()]//text()").extract()
         stars = sel.xpath("//div[@class='flex-grow-1']/span[@class='stars']").extract()
         return {
             'highest_potential': self.parser_skill(potencial[0:2]),
@@ -151,8 +153,3 @@ class Players:
         row['aerial_passing'] = self.calcule_skill(row, skill_name='aerial_passing')
         row['set_plays'] = self.calcule_skill(row, skill_name='set_plays')
         return row
-
-
-if __name__ == '__main__':
-    ...
-    # get_player_scout_report(player_id=214119207, session_id='ir6mqa5e04e96g0t50beef9dm6')
